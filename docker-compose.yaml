@@ -10,7 +10,7 @@ services:
       context: ./chain_server
     container_name: chain-server
     ports:
-      - "8009:8009"
+      - "${CHAIN_SERVER_PORT:-8009}:8009"
     environment:
       - LLM_API_KEY=${LLM_API_KEY}
       - CATALOG_RETRIEVER_URL=http://catalog-retriever:8010
@@ -31,7 +31,7 @@ services:
       context: ./catalog_retriever
     container_name: catalog-retriever
     ports:
-      - "8010:8010"
+      - "${CATALOG_RETRIEVER_PORT:-8010}:8010"
     environment:
       - EMBED_API_KEY=${EMBED_API_KEY}
       - MILVUS_HOST=milvus
@@ -51,7 +51,7 @@ services:
       context: ./memory_retriever
     container_name: memory-retriever
     ports:
-      - "8011:8011"
+      - "${MEMORY_RETRIEVER_PORT:-8011}:8011"
     environment:
       - MILVUS_HOST=milvus
       - MILVUS_PORT=19530
@@ -72,7 +72,7 @@ services:
       - CONFIG_OVERRIDE=${CONFIG_OVERRIDE}
     container_name: rails
     ports:
-      - "8012:8012"
+      - "${GUARDRAILS_PORT:-8012}:8012"
     volumes:
       - ./shared:/app/shared
     networks:
@@ -98,7 +98,7 @@ services:
     container_name: milvus-etcd
     image: quay.io/coreos/etcd:v3.5.5
     ports:
-      - "2379:2379"
+      - "${ETCD_PORT:-2379}:2379"
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
       - ETCD_AUTO_COMPACTION_RETENTION=1000
@@ -125,8 +125,8 @@ services:
     container_name: milvus-minio
     image: minio/minio:RELEASE.2023-03-20T20-16-18Z
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
@@ -149,8 +149,8 @@ services:
     security_opt:
       - seccomp:unconfined
     ports:
-      - "19530:19530"
-      - "9091:9091"
+      - "${MILVUS_PORT:-19530}:19530"
+      - "${MILVUS_HEALTH_PORT:-9091}:9091"
     environment:
       ETCD_ENDPOINTS: http://etcd:2379
       MINIO_ADDRESS: minio:9000
@@ -177,7 +177,7 @@ services:
     image: nginx:1.25.3-alpine
     container_name: nginx-proxy
     ports:
-      - "3000:80"  # Brev will expose this port
+      - "${HTTP_HOST_PORT:-3000}:80"  # Brev/Hub will expose this port
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
