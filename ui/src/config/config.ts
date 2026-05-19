@@ -72,7 +72,7 @@ const getConfig = (): AppConfig => {
     features: {
       guardrails: {
         enabled: true,
-        defaultState: true,
+        defaultState: false,
       },
       imageUpload: {
         enabled: true,
